@@ -1,4 +1,8 @@
-docker-compose.yml
+# editor detritus
+.*sw?
+*~
+
+#docker-compose.yml
 docker
 flarum.env
 test.sh

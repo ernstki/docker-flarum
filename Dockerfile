@@ -52,15 +52,23 @@ RUN apk add --no-progress --no-cache \
     php8-zlib \
     su-exec \
     s6 \
-  && cd /tmp \
+    vim \
+    the_silver_searcher
+
+RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/nginx
+RUN cd /tmp \
   && curl --progress-bar http://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && sed -i 's/memory_limit = .*/memory_limit = ${PHP_MEMORY_LIMIT}/' /etc/php8/php.ini \
   && chmod +x /usr/local/bin/composer \
   && mkdir -p /run/php /flarum/app \
   && COMPOSER_CACHE_DIR="/tmp" composer create-project flarum/flarum:$VERSION /flarum/app \
   && composer clear-cache \
-  && rm -rf /flarum/.composer /tmp/* \
-  && setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/nginx
+  && rm -rf /flarum/.composer /tmp/*
+
+RUN echo -e '\n\
+set -o vi\n\
+alias vi=vim\n\
+' > ~/.ashrc
 
 COPY rootfs /
 RUN chmod +x /usr/local/bin/* /etc/s6.d/*/run /etc/s6.d/.s6-svscan/*
